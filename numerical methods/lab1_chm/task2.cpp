@@ -1,6 +1,5 @@
 #include <iostream>
 #include <complex>
-#include <vector>
 #include <cmath>
 
 using namespace std;
