@@ -33,6 +33,10 @@ vector<double> Fv(vector<double> _x, int _code) {
     return _result;    
 }
 
+long long factorial(int num) {
+    long long arr[] = {1,1,2,6,24,120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000};
+    return arr[num];
+}
 
 vector<vector<double>> SeparatedDifferences(vector<double> _x, int _code = 2) {
     int _size = _x.size();
@@ -51,6 +55,7 @@ vector<vector<double>> SeparatedDifferences(vector<double> _x, int _code = 2) {
         
         for (int j = 1; j <= _sizeOfColumn; ++j) {
             _matrixResult[i][j - 1] = (_matrixResult[i - 1][j] - _matrixResult[i - 1][j - 1]) / (_x[j - 1 + i] - _x[j - 1]);
+            //_matrixResult[i][j - 1] /= factorial(i);
         }
     }
 
@@ -113,7 +118,12 @@ void PolinomialAddition(vector<double>& _polinom1, vector<double>& _polinom2) {
 
 void print(vector<double> _polinom) {
     cout << "Polinom:\n";
-    cout << _polinom[1] << "*x";
+    cout << _polinom[0];
+    if (_polinom[1] < 0) {
+        cout << _polinom[1] << "*x";
+    } else {
+        cout << "+" << _polinom[1] << "*x";
+    }
     for (int i = 2; i < _polinom.size(); ++i) {
         if (_polinom[i] != 0) {
             if (_polinom[i] < 0) cout << _polinom[i] << "*x^" << i;
@@ -137,7 +147,7 @@ void Solution() {
         double h = (b - a) / (_sizeOfCurrentX - 1);
         
         // заполняем вектор иксов
-        for (int i = 0; i < _sizeOfCurrentX; ++i) { _x[i] = -5. + i * h; }
+        for (int i = 0; i < _sizeOfCurrentX; ++i) { _x[i] = a + i * h; }
 
         // код из прошлой таски
         vector<vector<double>> _differences = SeparatedDifferences(_x);
