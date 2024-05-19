@@ -59,7 +59,7 @@ vector<double> SolveSystem(vector<vector<double>> _s, vector<double> _b, double 
 
 // проверка построенной формулы
 double f(double x) {
-    return exp(x);
+    return pow(x, 3);
 }
 
 double quadrature_formula(vector<double> _A, vector<double> _x) {
