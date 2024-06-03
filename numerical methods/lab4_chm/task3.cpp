@@ -3,7 +3,7 @@
 #include <vector>
 #include <cmath>
 
-#define INF 2000000000
+#define INF 2147483647
 
 using namespace std;
 
@@ -77,7 +77,7 @@ double R_s(vector<double> _x) {
 }
 /*-----------------------------------*/
 
-/**/
+/*----------Правило Рунге----------*/
 bool condition(double _I1, double _I2, double _h1, double _h2, double _eps) {
     static int m = 1;
     if (abs((_I2 - _I1) / (1 - pow(_h2 / _h1, m))) < _eps) {
@@ -86,7 +86,7 @@ bool condition(double _I1, double _I2, double _h1, double _h2, double _eps) {
     }
     return false;
 }
-/**/
+/*---------------------------------*/
 
 void main_loop(double _a, double _b, double _h1, double _h2, double _eps) {
     static int count = 1;
@@ -103,8 +103,7 @@ void main_loop(double _a, double _b, double _h1, double _h2, double _eps) {
         double I_h2 = pFunc(x2);
 
         if (condition(I_h1, I_h2, _h1, _h2, _eps)) {
-            cout << "Численное решение интеграла " << count++ << " методом с шагом " << _h2 << ": " << setprecision(10) << I_h2 << "\n";
-            _h1 = 0.1; _h2 = _h1 / 2;
+            cout << "Численное решение интеграла " << count++ << " методом с шагом " << _h1 << ": " << setprecision(10) << I_h1 << "\n";
             break;
         }
         _h1 /= 2;
