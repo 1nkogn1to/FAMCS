@@ -71,13 +71,12 @@ void PolinomialMultiplication(vector<double>& _polinom1, vector<double>& _polino
     int _size1 = _polinom1.size(), _size2 = _polinom2.size();
     
     if (_size1 == 0) {
-        _polinom1 = _polinom2;
         _polinom2.clear();
         return;
     }
 
     if (_size2 == 0) {
-        _polinom2.clear();
+        _polinom1.clear();
         return;
     }
 
