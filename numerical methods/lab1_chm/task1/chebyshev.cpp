@@ -1,20 +1,23 @@
 #include <iostream>
 #include <iomanip>
-#include <time.h>
+#include <ctime>
 #include <cmath>
 
 using namespace std;
 
-double f(double x) { return pow(sin(x), 2) * exp(x) - 3 * x + 1.; }
-double df(double x) {
-    double _2x = 2. * x;
+double f(const double& x) { return pow(sin(x), 2) * exp(x) - 3 * x + 1.; }
+
+double df(const double& x) {
+    double _2x = 2 * x;
     return -3. + exp(x) * (sin(_2x) + 0.5 - 0.5 * cos(_2x));
 }
-double ddf(double x) {
-    double _2x = 2. * x;
+
+double ddf(const double& x) {
+    double _2x = 2 * x;
     return exp(x) * (2 * sin(_2x) + 0.5 + 1.5 * cos(_2x));
 }
-double g(double x) {
+
+double g(const double& x) {
     double _f = f(x), _df = df(x);
     return x - _f / _df - pow(_f, 2) * ddf(x) / (2 * pow(_df, 3));
 }
@@ -47,4 +50,3 @@ int main() {
 
     return 0;
 }
-//1.04
