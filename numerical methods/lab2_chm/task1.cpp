@@ -11,7 +11,7 @@ double F(double _x) {
     return _x * exp(-_x);
 }
 
-vector<double> Fv(vector<double> _x) {
+vector<double> Fv(const vector<double>& _x) {
     double _size = _x.size();
     vector<double> _result(_size);
 
@@ -21,7 +21,7 @@ vector<double> Fv(vector<double> _x) {
     return _result;
 }
 
-vector<vector<double>> SeparatedDifferences(vector<double> _x) {
+vector<vector<double>> SeparatedDifferences(const vector<double>& _x) {
     int _size = _x.size();
 
     if (_size == 0) { vector<vector<double>>(0); }
@@ -51,17 +51,6 @@ void MyClear(vector<double>& _v1, vector<double>& _v2) {
 void PolinomialMultiplication(vector<double>& _polinom1, vector<double>& _polinom2) {
     int _size1 = _polinom1.size(), _size2 = _polinom2.size();
     
-    if (_size1 == 0) {
-        _polinom1 = _polinom2;
-        _polinom2.clear();
-        return;
-    }
-
-    if (_size2 == 0) {
-        _polinom2.clear();
-        return;
-    }
-
     vector<double> _temp = _polinom1;
     _polinom1.clear();
     _polinom1.resize(_size1 + _size2 - 1, 0);
@@ -74,7 +63,7 @@ void PolinomialMultiplication(vector<double>& _polinom1, vector<double>& _polino
     MyClear(_temp, _polinom2);
 }
 
-void Polinom_x_Scalar(vector<double>& _polinom, double _scalar) {
+void Polinom_x_Scalar(vector<double>& _polinom, const double& _scalar) {
     int _size = _polinom.size();
     for (int i = 0; i < _size; ++i) {
         _polinom[i] *= _scalar;
@@ -96,7 +85,7 @@ void PolinomialAddition(vector<double>& _polinom1, vector<double>& _polinom2) {
     _polinom2.clear();
 }
 
-vector<double> Pv(vector<double> _x, vector<double> _polinom) {
+vector<double> Pv(const vector<double>& _x, const vector<double>& _polinom) {
     int _sizeX = _x.size();
     int _sizeP = _polinom.size();
 
@@ -113,18 +102,12 @@ vector<double> Pv(vector<double> _x, vector<double> _polinom) {
 
 // Проверка является ли текущий полином достаточным для интерполяции
 // исходной функции с точностью до 4 знака после запятой
-bool Check(vector<double> _x, vector<double> _polinom, double _eps) {
+bool Check(const vector<double>& _x, const vector<double>& _polinom, double _eps) {
     vector<double> _fValues = Fv(_x);
     vector<double> _iValues = Pv(_x, _polinom);
 
     int _sizeF = _fValues.size();
     int _sizeI = _iValues.size();
-
-    if (_sizeF != _sizeI) {
-        cerr << "Something went wrnog.";
-        MyClear(_fValues, _iValues);
-        return false;
-    }
 
     for (int i = 0; i < _sizeF; ++i) {
         if (abs(_fValues[i] - _iValues[i]) >= _eps) {
@@ -147,7 +130,7 @@ bool Check(vector<double> _x, vector<double> _polinom, double _eps) {
     return true;
 }
 
-void print(vector<double> _polinom) {
+void print(const vector<double>& _polinom) {
     cout << "Polinom:\n";
     cout << _polinom[1] << "*x";
     for (int i = 2; i < _polinom.size(); ++i) {
