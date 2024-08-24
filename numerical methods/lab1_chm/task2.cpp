@@ -3,7 +3,7 @@
 #include <cmath>
 
 using namespace std;
-
+// мда уж
 complex<double> df(int size, complex<double> x, complex<double>* polinom) {
     complex<double>* result = new complex<double>[size - 1];
     for (int i = 0; i < size - 1; i++) { result[i] = polinom[i + 1]; }
