@@ -1,18 +1,20 @@
 #include <iostream>
 #include <iomanip>
+#include <ctime>
 #include <cmath>
-#include <time.h>
 
 using namespace std;
 
-double f(double x) { return pow(sin(x), 2) * exp(x) - 3 * x + 1.; }
-double df(double x) {
+double f(const double& x) { return pow(sin(x), 2) * exp(x) - 3 * x + 1.; }
+
+double df(const double& x) {
     double _2x = 2. * x;
     return -3. + exp(x) * (sin(_2x) + 0.5 - 0.5 * cos(_2x));
 }
-double g(double x) { return x - f(x) / df(x); }
 
-unsigned int Solution(double accuracy = 1e-6) {
+double g(const double& x) { return x - f(x) / df(x); }
+
+unsigned int Solution(const double& accuracy = 1e-6) {
     double x0 = 0.3;
     int counter = 0;
     unsigned int t1 = clock();
@@ -33,10 +35,9 @@ unsigned int Solution(double accuracy = 1e-6) {
 
 int main() {
     unsigned int sum = 0;
-    for (int i = 0; i < 10000; ++i) {
+    for (int i = 0; i < 10; ++i) {
         sum += Solution();
     }
-    cout << sum / 10000.;
+    cout << sum / 10.;
     return 0;
 }
-//1.33
