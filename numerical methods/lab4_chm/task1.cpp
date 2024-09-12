@@ -21,9 +21,9 @@ bool condition(const vector<double>& _v1, const vector<double>& _v2, const doubl
     return true;
 }
 
-vector<double> SolveSystem(vector<vector<double>> _s, vector<double> _b, double _eps = 1e-6) {
-    vector<double> x = _b; // начальное приближение
-    int n = x.size();
+void SolveSystem(vector<vector<double>>& _s, vector<double>& _b) {
+    
+    int n = _b.size();
 
     for (int j = 0; j < n - 1; j++) {
         for (int i = j + 1; i < n; i++) {
@@ -48,21 +48,15 @@ vector<double> SolveSystem(vector<vector<double>> _s, vector<double> _b, double 
         _s[i][i] = 1;
     }
     _b[0] /= _s[0][0];
-    _s[0][0] = 1;
-    
-    for (int i = 0; i < n; ++i) {
-        x[i] =_b[i];
-    }
-
-    return x;
+    _s[0][0] = 1; // это деление вроде как и не нужно
 }
 
 // проверка построенной формулы
-double f(double x) {
+double f(const double& x) {
     return pow(x, 3);
 }
 
-double quadrature_formula(vector<double> _A, vector<double> _x) {
+double quadrature_formula(const vector<double>& _A, const vector<double>& _x) {
     if (_A.size() != _x.size()) {
         return INFINITY;
     }
@@ -89,11 +83,11 @@ void Solution() {
     for (int i = 0; i < n; ++i) {
         x[i] = a + i * h;
     }
-    vector<double> A = SolveSystem(s, vb);
+    SolveSystem(s, vb);
     for (int i = 0; i < n; ++i) {
-        cout << setprecision(15) << A[i] << " ";
+        cout << setprecision(15) << vb[i] << " ";
     }
-    cout << quadrature_formula(A, x);
+    cout << "\n" << quadrature_formula(vb, x);
 }
 
 int main() {

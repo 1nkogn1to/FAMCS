@@ -72,6 +72,7 @@ double R_s(const vector<double>& _x) {
     return -pow(_x[1] - _x[0], 4) * (_x[_x.size() - 1] - _x[0]) / 18 * abs_maximum(D4f(_x), _x);
 }
 
+// не дошли руки доделать
 vector<double> searching_for_step(double _a, double _b, double _eps) {
     double h = 0.1;
     vector<double> result;
@@ -89,7 +90,6 @@ vector<double> searching_for_step(double _a, double _b, double _eps) {
         }*/
         h /= 2;
         x.clear();
-        //cout << "hui\n";
 
     return x;
 }
@@ -107,7 +107,6 @@ void Solution() {
 }
 
 int main() {
-    cout << "zalupa\n";
     Solution();
 
     return 0;
