@@ -42,11 +42,10 @@ void print_matrix(const char* filename, const std::vector<std::vector<double>>& 
 }
 
 int main() {
-    std::vector<std::vector<double>> u1, u01, u001, u2;
+    std::vector<std::vector<double>> u1, u01, u2;
 
     Solution(u1);
     Solution(u01, 0.01);
-    Solution(u001, 0.001);
     Solution(u2, 0.2); // должно получиться кривое решение
 
     print_matrix("output1.txt", u1);
