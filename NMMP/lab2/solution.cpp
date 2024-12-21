@@ -25,9 +25,9 @@ void Solution(std::vector<std::vector<double>>& u, double tau = 0.1) {
     for (int j = 2; j < M + 1; ++j) {
         u[j][0] = pow(t[j], 3);
         for (int i = 1; i < N; ++i) {
-            u[j][i] = 2 * u[j - 1][i] - u[j - 2][i] + pow(tau, 2) * ((u[j - 1][i - 1] - 2 * u[j - 1][i] + u[j - 1][i + 1]) / pow(h, 2) + 6 * t[j] - 2);
+            u[j][i] = 2 * u[j - 1][i] - u[j - 2][i] + tau2 * ((u[j - 1][i - 1] - 2 * u[j - 1][i] + u[j - 1][i + 1]) / pow(h, 2) + 6 * t[j] - 2);
         }
-        u[j][N] = (2 - 2 * tau2 - 2 * tau2 / h) * u[j - 1][N] + 2 * tau2 * u[j - 1][N - 1] - u[j - 2][N] + 2 * tau2 * (3 + pow(t[j - 1], 3)) / h + 6 * tau2 * t[j - 1] - 2 * tau2;
+        u[j][N] = 1 / (1 / h + 1 + h / (2 * tau2)) * (1 / h * u[j - 1][N - 1] - h / (2 * tau2) * u[j - 2][N] + h / tau2 * u[j - 1][N] + 3 + pow(t[j], 3) + 3 * h * t[j + 1] -h);
     }
 }
 
