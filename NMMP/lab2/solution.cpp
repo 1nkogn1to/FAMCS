@@ -42,15 +42,15 @@ void print_matrix(const char* filename, const std::vector<std::vector<double>>& 
 }
 
 int main() {
-    std::vector<std::vector<double>> u1, u01, u2;
+    std::vector<std::vector<double>> u1, u01, u001;
 
     Solution(u1);
     Solution(u01, 0.01);
-    Solution(u2, 0.2); // должно получиться кривое решение
+    Solution(u001, 0.001);
 
     print_matrix("output1.txt", u1);
     print_matrix("output01.txt", u01);
-    print_matrix("output2.txt", u2);
+    print_matrix("output001.txt", u001);
 
     return 0;
 }
