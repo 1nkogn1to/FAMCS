@@ -111,9 +111,9 @@ def task3(x):
     return progonka(syst, d)
 
 def plot(x, u1, u2, u3):
-    plt.plot(x, u1, label='Первый метод', marker='d')
-    plt.plot(x, u2, label='Метод баланса', marker='s')
-    plt.plot(x, u3, label='Метод Ритца', marker='.')
+    plt.plot(x, u1, label='Первый метод', marker='D')
+    plt.plot(x, u2, label='Метод баланса')
+    plt.plot(x, u3, label='Метод Ритца', marker='s')
     plt.legend()
     plt.xlabel('Ox')
     plt.ylabel('u(x)')
@@ -128,7 +128,7 @@ def plot_error(x, ue):
     plt.show()
 
 def main():
-    N = 1000
+    N = 10
     x = np.linspace(0, 1, N + 1)
     u1 = task1(x)
     u2 = task2(x)

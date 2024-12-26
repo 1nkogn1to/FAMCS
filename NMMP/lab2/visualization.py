@@ -72,17 +72,14 @@ def plot_error(x, u, ua, tau):
 
 def main():
     u1 = read("output1.txt")
-    u01 = read("output01.txt")
     u001 = read("output001.txt")
     x = np.linspace(0, 1, len(u1[0]))
 
     ua = analitic(x)
     plot(x, ua, "Аналитическое решение")
     plot(x, u1)
-    plot(x, u01)
     plot(x, u001)
     plot_error(x, u1[-1], ua[-1], 1 / (len(u1) - 1))
-    plot_error(x, u01[-1], ua[-1], 1 / (len(u01) - 1))
     plot_error(x, u001[-1], ua[-1], 1 / (len(u001) - 1))
 
 if __name__ == "__main__":
