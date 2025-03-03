@@ -95,35 +95,27 @@ void approx3(vector<vector<double>>& u, const vector<double>& z, const vector<do
 void Solution() {
     
     int n = 21, m = 41;
-    double R = 170, u0 = 50, a = 0, b = 200, c = -200, d = -c,
-            eps = 1e-5;
+    /*double R = 170, u0 = 50, a = 0, b = 200, c = -200, d = -c,
+            eps = 1e-5;*/
     
     int distance_to_center_mul = 5;
-    //double R1 = 15, R2 = 5, u1 = 5, u2 = 3.5, a = 0, b = 20, c = -20, d = -c, eps = 1e-5;
-
-
-
+    double R1 = 15, R2 = 5, u1 = 5, u2 = 3.5, a = 0, b = 20, c = -20, d = -c, eps = 1e-5;
+ 
     vector<double> r(n), z(m);
     Linspace(a, b, r);
     Linspace(c, d, z);
-    print_vector("output/r_o.txt", r);
-    print_vector("output/z_o.txt", z);
-    print_scalar("output/R_o.txt", R);
-    print_scalar("output/u0_o.txt", u0);
+    print_vector("output/r.txt", r);
+    print_vector("output/z.txt", z);
+    print_scalar("output/dist.txt", distance_to_center_mul);
 
     double h_r = r[1] - r[0], h_z = z[1] - z[0], _1h_r_2 = 1 / pow (h_r, 2), _1h_z_2 = 1 / pow (h_z, 2)/*rel_sq = pow(h_r / h_z, 2), mul = 1 / (2 + 2 * rel_sq)*/, distance = h_z * distance_to_center_mul;
 
     vector<vector<double>> u(m, vector<double>(n, 0));
 
+    /** ЗАПУСК ТАЙМЕРА **/
     auto start = chrono::high_resolution_clock::now();
-
-    int k = 0, mid = (m - 1) / 2;
-    while (r[k] <= R) {
-        u[mid][k] = u0;
-        ++k;
-    }
     
-    /*
+    /** заполнение дисков **/
     int k1 = 0, k2 = 0, mid = (m - 1) / 2;
     while (r[k1] <= R1) {
         u[mid - distance_to_center_mul][k1] = u1;
@@ -133,8 +125,7 @@ void Solution() {
         u[mid + distance_to_center_mul][k2] = u2;
         ++k2;
     }
-    */
-
+    
     //approx4(u, z, r, R, u0, mid, k);
 
     ofstream fapp("output/approx.txt");
@@ -152,22 +143,6 @@ void Solution() {
         vector<vector<double>> u_copy = u;
 
         for (int j = 1; j < m - 1; ++j) {
-            if (j == mid) {
-                for (int i = k; i < n - 1; ++i) {
-                    u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
-                }
-                continue;
-            }
-            for (int i = 1; i < n - 1; ++i) {
-                u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
-            }
-            u[j][0] = 4 * u[j][1] / 3 - u[j][2] / 3;
-            //u[j][0] = u[j][1];
-        }
-
-
-        /*
-        for (int j = 0; j < m - 1; ++j) {
             if (j == mid - distance_to_center_mul) {
                 for (int i = k1; i < n - 1; ++i) {
                     u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
@@ -187,7 +162,6 @@ void Solution() {
             }
             u[j][0] = 4 * u[j][1] / 3 - u[j][2] / 3;
         }
-        */
 
         if (Condition(u, u_copy, eps)) {
             cout << "Number of iterations: " << counter << "\n";
@@ -201,7 +175,7 @@ void Solution() {
     chrono::duration<double> duration = end - start;
     cout << "Время выполнения (сек): " << duration.count() << "\n";
 
-    ofstream fu("output/u_o.txt");
+    ofstream fu("output/u.txt");
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
             fu << u[i][j] << " ";
