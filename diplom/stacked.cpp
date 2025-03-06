@@ -38,68 +38,12 @@ void print_scalar(const char* fileName, double scal) {
     fout.close();
 }
 
-void approx1(vector<vector<double>>& u, const vector<double>& z, const vector<double>& r, double R, double u0) {
-    double l = .04;
-    for (int i = 0; i < u.size(); ++i) {
-        for (int j = 0; j < u[i].size(); ++j) {
-            if (r[j] <= R) {
-                u[i][j] = u0 * exp(-l * abs(z[i]));
-            } else {
-                u[i][j] = u0 * exp(-l * sqrt(pow(r[j] - R, 2) + pow(z[i], 2)));
-            }
-        }
-    }
-}
-
-void approx2(vector<vector<double>>& u, const vector<double>& z, const vector<double>& r, double R, double u0) {
-    approx1(u, z, r, R, u0);
-
-    for (int j = 0; j < u[0].size(); ++j) {
-        u[0][j] = 2 * u0 * R / (pi * sqrt(pow(r[j], 2) + pow(z[0], 2)));
-        u[u.size() - 1][j] = 2 * u0 * R / (pi * sqrt(pow(r[j], 2) + pow(z[u.size() - 1], 2)));
-    }
-    for (int i = 1; i < u.size() - 1; ++i) {
-        u[i][u[i].size() - 1] = 2 * u0 * R / (pi * sqrt(pow(r[u[i].size() - 1], 2) + pow(z[i], 2)));
-    }
-}
-
-void approx3(vector<vector<double>>& u, const vector<double>& z, const vector<double>& r, double R, double u0, int mid) {
-    
-    for (int j = 0; j < u[0].size(); ++j) {
-        u[0][j] = 2 * u0 * R / (pi * sqrt(pow(r[j], 2) + pow(z[0], 2)));
-        u[u.size() - 1][j] = 2 * u0 * R / (pi * sqrt(pow(r[j], 2) + pow(z[u.size() - 1], 2)));
-    }
-    for (int i = 1; i < u.size() - 1; ++i) {
-        u[i][u[i].size() - 1] = 2 * u0 * R / (pi * sqrt(pow(r[u[i].size() - 1], 2) + pow(z[i], 2)));
-    }
-    
-    int last_r = r.size() - 1, last_z = z.size() - 1;
-    double l = (r[last_r] - R) / (10 * (z[last_z] - z[0]));
-    for (int j = 0; j < u[mid].size() - 1; ++j) {
-        if (r[j] <= R) {
-            u[mid][j] = u0;
-        } else {
-            u[mid][j] = u0 * exp(-l * (r[j] - R)) + (u[mid][last_r] - u0 * exp(-l * (r[last_r] - R))) / sqrt(r[last_r] - R) * sqrt(r[j] - R);
-        }
-    }
-
-    for (int i = 1; i < u.size() - 1; ++i) {
-        if (i == mid) continue;
-
-        for (int j = 0; j < u[i].size() - 1; ++j) {
-            u[i][j] = u[mid][j] * exp(-l * abs(z[i])) + (u[last_z][j] - u[mid][j] * exp(-l * (z[last_z]))) / sqrt(z[last_z]) * sqrt(abs(z[i]));
-        }
-    }
-}
-
 void Solution() {
     
-    int n = 21, m = 41;
-    /*double R = 170, u0 = 50, a = 0, b = 200, c = -200, d = -c,
-            eps = 1e-5;*/
+    int n = 51, m = 101;
     
-    int distance_to_center_mul = 5;
-    double R1 = 15, R2 = 5, u1 = 5, u2 = 3.5, a = 0, b = 20, c = -20, d = -c, eps = 1e-5;
+    int distance_to_center_mul = 15;
+    double R1 = 15, R2 = 40, u1 = 5, u2 = 3.5, a = 0, b = 50, c = -50, d = -c, eps = 1e-5;
  
     vector<double> r(n), z(m);
     Linspace(a, b, r);
@@ -108,7 +52,7 @@ void Solution() {
     print_vector("output/z.txt", z);
     print_scalar("output/dist.txt", distance_to_center_mul);
 
-    double h_r = r[1] - r[0], h_z = z[1] - z[0], _1h_r_2 = 1 / pow (h_r, 2), _1h_z_2 = 1 / pow (h_z, 2)/*rel_sq = pow(h_r / h_z, 2), mul = 1 / (2 + 2 * rel_sq)*/, distance = h_z * distance_to_center_mul;
+    double h_r = r[1] - r[0], h_z = z[1] - z[0], _1h_r_2 = 1 / pow (h_r, 2), _1h_z_2 = 1 / pow (h_z, 2)/*rel_sq = pow(h_r / h_z, 2), mul = 1 / (2 + 2 * rel_sq)*/, distance = h_z * 2 * distance_to_center_mul;
 
     vector<vector<double>> u(m, vector<double>(n, 0));
 
@@ -125,8 +69,8 @@ void Solution() {
         u[mid + distance_to_center_mul][k2] = u2;
         ++k2;
     }
-    
-    //approx4(u, z, r, R, u0, mid, k);
+
+
 
     ofstream fapp("output/approx.txt");
     for (int i = 0; i < u.size(); ++i) {
