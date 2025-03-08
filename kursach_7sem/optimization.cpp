@@ -94,8 +94,8 @@ void approx3(vector<vector<double>>& u, const vector<double>& z, const vector<do
 
 void Solution() {
     
-    int n = 201, m = 401;
-    double R = 175, u0 = 50, a = 0, b = 200, c = -200, d = -c,
+    int n = 101, m = 201;
+    double R = 5, u0 = 5, a = 0, b = 25, c = -25, d = -c,
             eps = 1e-5;
 
     vector<double> r(n), z(m);
@@ -134,7 +134,7 @@ void Solution() {
     while (true) {
         vector<vector<double>> u_copy = u;
 
-        for (int j = 1; j < m - 1; ++j) {
+        /*for (int j = 1; j < m - 1; ++j) {
             if (j == mid) {
                 for (int i = k; i < n - 1; ++i) {
                     u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
@@ -146,7 +146,22 @@ void Solution() {
             }
             u[j][0] = 4 * u[j][1] / 3 - u[j][2] / 3;
             //u[j][0] = u[j][1];
+        }*/
+
+        /*NEW*/
+        for (int i = k; i < n - 1; ++i) {
+            u[mid][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid][i - 1] + _1h_z_2 * (u[mid - 1][i] + u[mid + 1][i]));
         }
+
+        for (int j = 1; j < mid; ++j) {
+            for (int i = 1; i < n - 1; ++i) {
+                u[mid + j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid + j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid + j][i - 1] + _1h_z_2 * (u[mid + j - 1][i] + u[mid + j + 1][i]));
+                u[mid - j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid - j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid - j][i - 1] + _1h_z_2 * (u[mid - j - 1][i] + u[mid - j + 1][i]));
+            }
+            u[mid + j][0] = 4 * u[mid + j][1] / 3 - u[mid + j][2] / 3;
+            u[mid - j][0] = 4 * u[mid - j][1] / 3 - u[mid - j][2] / 3;
+        }
+        /*NEW*/
 
         if (Condition(u, u_copy, eps)) {
             cout << "Number of iterations: " << counter << "\n";
