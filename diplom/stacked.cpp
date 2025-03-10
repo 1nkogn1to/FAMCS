@@ -38,8 +38,16 @@ void print_scalar(const char* fileName, double scal) {
     fout.close();
 }
 
-void approx(const vector<vector<double>>& matr) {
-    
+void approx1(vector<vector<double>>& u, const vector<double>& r, const vector<double> z, double u1, double u2, double R1, double R2, int mid, int dist) {
+    int fz = 0, lz = z.size() - 1, lr = r.size() - 1;
+    for (int j = 0; j < r.size(); ++j) {
+        u[fz][j] = 2 * u1 * R1 / (pi * sqrt(pow(r[j], 2) + pow(z[mid - dist] - z[fz], 2))) + 2 * u2 * R2 / (pi * sqrt(pow(r[j], 2) + pow(z[mid + dist] - z[fz], 2)));
+        u[lz][j] = 2 * u1 * R1 / (pi * sqrt(pow(r[j], 2) + pow(z[lz] - z[mid - dist], 2))) + 2 * u2 * R2 / (pi * sqrt(pow(r[j], 2) + pow(z[lz] - z[mid + dist], 2)));
+    }
+
+    for (int i = 1; i < lz; ++i) {
+        u[i][lr] = 2 * u1 * R1 / (pi * sqrt(pow(r[lr], 2) + pow(z[i] - z[mid - dist], 2))) + 2 * u2 * R2 / (pi * sqrt(pow(r[lr], 2) + pow(z[i] - z[mid + dist], 2)));
+    }
 }
 
 void Solution() {
@@ -47,7 +55,7 @@ void Solution() {
     int n = 51, m = 101;
     
     int distance_to_center_mul = 15;
-    double R1 = 15, R2 = 40, u1 = 5, u2 = 3.5, a = 0, b = 50, c = -50, d = -c, eps = 1e-5;
+    double R1 = 15, R2 = 25, u1 = 5, u2 = 5, a = 0, b = 50, c = -50, d = -c, eps = 1e-9;
  
     vector<double> r(n), z(m);
     Linspace(a, b, r);
@@ -74,8 +82,11 @@ void Solution() {
         ++k2;
     }
 
+    cout << z[mid - distance_to_center_mul] << " " << z[mid + distance_to_center_mul] << "\n";
+
     /*Probable approximation*/
     // code ...
+    approx1(u, r, z, u1, u2, R1, R2, mid, distance_to_center_mul);
 
     ofstream fapp("output/approx.txt");
     for (int i = 0; i < u.size(); ++i) {
