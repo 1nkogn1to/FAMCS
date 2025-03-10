@@ -62,7 +62,6 @@ void Solution() {
     Linspace(c, d, z);
     print_vector("output/r.txt", r);
     print_vector("output/z.txt", z);
-    print_scalar("output/dist.txt", distance_to_center_mul);
 
     double h_r = r[1] - r[0], h_z = z[1] - z[0], _1h_r_2 = 1 / pow (h_r, 2), _1h_z_2 = 1 / pow (h_z, 2)/*rel_sq = pow(h_r / h_z, 2), mul = 1 / (2 + 2 * rel_sq)*/, distance = h_z * 2 * distance_to_center_mul;
 
@@ -88,14 +87,14 @@ void Solution() {
     // code ...
     approx1(u, r, z, u1, u2, R1, R2, mid, distance_to_center_mul);
 
-    ofstream fapp("output/approx.txt");
+    /*ofstream fapp("output/approx.txt");
     for (int i = 0; i < u.size(); ++i) {
         for (int j = 0; j < u[i].size(); ++j) {
             fapp << u[i][j] << " ";
         }
         fapp << "\n";
     }
-    fapp.close();
+    fapp.close();*/
 
     int counter = 1;
 
