@@ -102,21 +102,16 @@ void Solution() {
         vector<vector<double>> u_copy = u;
 
         for (int j = 1; j < m - 1; ++j) {
+            int start = 1;
             if (j == mid - distance_to_center_mul) {
-                for (int i = k1; i < n - 1; ++i) {
-                    u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
-                }
-                continue;
+                start = k1;
             }
 
             if (j == mid + distance_to_center_mul) {
-                for (int i = k2; i < n - 1; ++i) {
-                    u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
-                }
-                continue;
+                start = k2;
             }
 
-            for (int i = 1; i < n - 1; ++i) {
+            for (int i = start; i < n - 1; ++i) {
                 u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
             }
             u[j][0] = 4 * u[j][1] / 3 - u[j][2] / 3;

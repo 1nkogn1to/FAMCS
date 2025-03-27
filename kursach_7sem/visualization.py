@@ -85,8 +85,8 @@ def sigma(r, z, u, u_a, R):
     while r[k + 1] <= R:
         k += 1
     
-    s_r = (u[mid + 1, :k - 1] - u[mid, :k - 1]) / h_z
-    s_a = (u_a[mid + 1, :k - 1] - u_a[mid, :k - 1]) / h_z
+    s_r = -(u[mid + 1, :k - 1] - u[mid, :k - 1]) / h_z
+    s_a = -(u_a[mid + 1, :k - 1] - u_a[mid, :k - 1]) / h_z
     plt.plot(r[:k - 1], s_a, label='analitic')
     plt.plot(r[:k - 1], s_r, label='numerical')
     plt.legend()
@@ -103,8 +103,6 @@ def main():
         R = float(f.read())
     with open('output/u0_o.txt', 'r') as f:
         u_0 = float(f.read())
-    with open('output/u_o1.txt', 'r') as f:
-        u1 = np.array([list(map(float, s.split())) for s in f])
     
     #surface_numerical(r, z, u)
     u_a = surface_analitic(r, z, R, u_0)
@@ -119,7 +117,7 @@ def main():
     #srez_v_z_min(r, u, u_a, u_0)
     #srez_v_r0(z, u, u_a, u_0)
     #srez_v_r_max(z, u, u_a, u_0)
-    # sigma(r, z, u1, u_a, R)
+    sigma(r, z, u, u_a, R)
 
 
 if __name__ == "__main__":

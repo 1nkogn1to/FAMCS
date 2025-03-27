@@ -14,6 +14,9 @@ def surface_numerical(r, z, u):
 
     plt.show()
 
+def sigma(u, r, R):
+    
+
 def main():
     with open('output/u.txt', 'r') as f:
         u = np.array([list(map(float, s.split())) for s in f])
@@ -21,7 +24,12 @@ def main():
         r = np.array(list(map(float, f.read().split())))
     with open('output/z.txt', 'r') as f:
         z = np.array(list(map(float, f.read().split())))
-    
+
+    with open('output/R1.txt', 'r') as f:
+        R1 = int(f.read())
+
+    print(R1)
+
     surface_numerical(r, z, u)
 
 
