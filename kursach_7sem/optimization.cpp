@@ -92,10 +92,23 @@ void approx3(vector<vector<double>>& u, const vector<double>& z, const vector<do
     }
 }
 
+double Q(const vector<vector<double>>& u, const vector<double>& r, double hz, int ind, int k) { // ind - индекс строки с диском, k - индекс элемента после последнего в диске
+    double integ1 = 0, integ2 = 0, hr = r[1] - r[0];
+
+    for (int i = 0; i < k - 1; ++i) {
+        integ1 += (-(u[ind + 1][i] - u[ind][i]) / hz * r[i] - (u[ind + 1][i + 1] - u[ind][i + 1]) / hz * r[i + 1]);
+        integ2 += (-(u[ind - 1][i] - u[ind][i]) / hz * r[i] - (u[ind - 1][i + 1] - u[ind][i + 1]) / hz * r[i + 1]);
+    }
+    integ1 *= (pi * hr);
+    integ2 *= (pi * hr);
+
+    return integ1 + integ2;
+}
+
 void Solution() {
     
-    int n = 101, m = 201;
-    double R = 5, u0 = 5, a = 0, b = 25, c = -25, d = -c,
+    int n = 501, m = 1001;
+    double R = 5, u0 = 5, a = 0, b = 10, c = -10, d = -c,
             eps = 1e-5;
 
     vector<double> r(n), z(m);
@@ -118,7 +131,7 @@ void Solution() {
         ++k;
     }
 
-    //approx4(u, z, r, R, u0, mid, k);
+    approx2(u, z, r, R, u0);
 
     ofstream fapp("output/approx.txt");
     for (int i = 0; i < u.size(); ++i) {
@@ -183,6 +196,10 @@ void Solution() {
         fu << "\n";
     }
     fu.close();
+
+    double Q1 = Q(u, r, h_z, mid, k);
+    
+    cout << "Recounted for first disk: " << Q1 << ", was for first disk: " << 8 * u0 * R << "\n";
 }
 
 int main() {
