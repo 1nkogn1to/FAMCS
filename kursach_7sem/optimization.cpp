@@ -52,7 +52,7 @@ void approx1(vector<vector<double>>& u, const vector<double>& z, const vector<do
 }
 
 void approx2(vector<vector<double>>& u, const vector<double>& z, const vector<double>& r, double R, double u0) {
-    approx1(u, z, r, R, u0);
+    //approx1(u, z, r, R, u0);
 
     for (int j = 0; j < u[0].size(); ++j) {
         u[0][j] = 2 * u0 * R / (pi * sqrt(pow(r[j], 2) + pow(z[0], 2)));
@@ -107,8 +107,8 @@ double Q(const vector<vector<double>>& u, const vector<double>& r, double hz, in
 
 void Solution() {
     
-    int n = 501, m = 1001;
-    double R = 5, u0 = 5, a = 0, b = 10, c = -10, d = -c,
+    int n = 251, m = 501;
+    double R = 25, u0 = 5, a = 0, b = 100, c = -100, d = -c,
             eps = 1e-5;
 
     vector<double> r(n), z(m);
@@ -132,15 +132,6 @@ void Solution() {
     }
 
     approx2(u, z, r, R, u0);
-
-    ofstream fapp("output/approx.txt");
-    for (int i = 0; i < u.size(); ++i) {
-        for (int j = 0; j < u[i].size(); ++j) {
-            fapp << u[i][j] << " ";
-        }
-        fapp << "\n";
-    }
-    fapp.close();
 
     int counter = 1;
 

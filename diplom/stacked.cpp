@@ -66,10 +66,10 @@ double Q(const vector<vector<double>>& u, const vector<double>& r, double hz, in
 
 void Solution() {
     
-    int n = 51, m = 101;
+    int n = 101, m = 201;
     
-    int dist = 15; // расстояние от диска до центра системы (оба диска равноудалены от центра)
-    double R1 = 15, R2 = 40, u1 = 3, u2 = 1, a = 0, b = 50, c = -50, d = -c, eps = 1e-5;
+    int dist = 35; // расстояние от диска до центра системы (оба диска равноудалены от центра)
+    double R1 = 15, R2 = 40, u1 = 2, u2 = 1, a = 0, b = 50, c = -50, d = -c, eps = 1e-5;
  
     vector<double> r(n), z(m);
     Linspace(a, b, r);
@@ -99,7 +99,7 @@ void Solution() {
 
     /*Probable approximation*/
     // code ...
-    approx1(u, r, z, u1, u2, R1, R2, mid, dist);
+    //approx1(u, r, z, u1, u2, R1, R2, mid, dist);
 
     /*ofstream fapp("output/approx.txt");
     for (int i = 0; i < u.size(); ++i) {
