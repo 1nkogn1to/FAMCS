@@ -51,15 +51,15 @@ void approx1(vector<vector<double>>& u, const vector<double>& z, const vector<do
     }
 }
 
-void approx2(vector<vector<double>>& u, const vector<double>& z, const vector<double>& r, double R, double u0) {
+void approx2(vector<vector<double>>& u, const vector<double>& z, const vector<double>& r, double R, double u0, double q) {
     //approx1(u, z, r, R, u0);
 
     for (int j = 0; j < u[0].size(); ++j) {
-        u[0][j] = 2 * u0 * R / (pi * sqrt(pow(r[j], 2) + pow(z[0], 2)));
-        u[u.size() - 1][j] = 2 * u0 * R / (pi * sqrt(pow(r[j], 2) + pow(z[u.size() - 1], 2)));
+        u[0][j] = q / (4 * pi * sqrt(pow(r[j], 2) + pow(z[0], 2)));
+        u[u.size() - 1][j] = q / (4 * pi * sqrt(pow(r[j], 2) + pow(z[u.size() - 1], 2)));
     }
     for (int i = 1; i < u.size() - 1; ++i) {
-        u[i][u[i].size() - 1] = 2 * u0 * R / (pi * sqrt(pow(r[u[i].size() - 1], 2) + pow(z[i], 2)));
+        u[i][u[i].size() - 1] = q / (4 * pi * sqrt(pow(r[u[i].size() - 1], 2) + pow(z[i], 2)));
     }
 }
 
@@ -107,7 +107,7 @@ double Q(const vector<vector<double>>& u, const vector<double>& r, double hz, in
 
 void Solution() {
     
-    int n = 251, m = 501;
+    int n = 201, m = 401;
     double R = 25, u0 = 5, a = 0, b = 100, c = -100, d = -c,
             eps = 1e-5;
 
@@ -131,48 +131,60 @@ void Solution() {
         ++k;
     }
 
-    approx2(u, z, r, R, u0);
-
-    int counter = 1;
+    double q = 8 * u0 * R;
 
     while (true) {
-        vector<vector<double>> u_copy = u;
 
-        /*for (int j = 1; j < m - 1; ++j) {
-            if (j == mid) {
-                for (int i = k; i < n - 1; ++i) {
+        approx2(u, z, r, R, u0, q);
+
+        int counter = 1;
+
+        while (true) {
+            vector<vector<double>> u_copy = u;
+
+            /*for (int j = 1; j < m - 1; ++j) {
+                if (j == mid) {
+                    for (int i = k; i < n - 1; ++i) {
+                        u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
+                    }
+                    continue;
+                }
+                for (int i = 1; i < n - 1; ++i) {
                     u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
                 }
-                continue;
-            }
-            for (int i = 1; i < n - 1; ++i) {
-                u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
-            }
-            u[j][0] = 4 * u[j][1] / 3 - u[j][2] / 3;
-            //u[j][0] = u[j][1];
-        }*/
+                u[j][0] = 4 * u[j][1] / 3 - u[j][2] / 3;
+                //u[j][0] = u[j][1];
+            }*/
 
-        /*NEW*/
-        for (int i = k; i < n - 1; ++i) {
-            u[mid][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid][i - 1] + _1h_z_2 * (u[mid - 1][i] + u[mid + 1][i]));
+            /*NEW*/
+            for (int i = k; i < n - 1; ++i) {
+                u[mid][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid][i - 1] + _1h_z_2 * (u[mid - 1][i] + u[mid + 1][i]));
+            }
+
+            for (int j = 1; j < mid; ++j) {
+                for (int i = 1; i < n - 1; ++i) {
+                    u[mid + j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid + j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid + j][i - 1] + _1h_z_2 * (u[mid + j - 1][i] + u[mid + j + 1][i]));
+                    u[mid - j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid - j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid - j][i - 1] + _1h_z_2 * (u[mid - j - 1][i] + u[mid - j + 1][i]));
+                }
+                u[mid + j][0] = 4 * u[mid + j][1] / 3 - u[mid + j][2] / 3;
+                u[mid - j][0] = 4 * u[mid - j][1] / 3 - u[mid - j][2] / 3;
+            }
+            /*NEW*/
+
+            if (Condition(u, u_copy, eps)) {
+                cout << "Number of iterations: " << counter << "\n";
+                break;
+            }
+            // if (counter % 1000 == 0) cout << counter << "\n";
+            counter++;
         }
-
-        for (int j = 1; j < mid; ++j) {
-            for (int i = 1; i < n - 1; ++i) {
-                u[mid + j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid + j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid + j][i - 1] + _1h_z_2 * (u[mid + j - 1][i] + u[mid + j + 1][i]));
-                u[mid - j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid - j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid - j][i - 1] + _1h_z_2 * (u[mid - j - 1][i] + u[mid - j + 1][i]));
-            }
-            u[mid + j][0] = 4 * u[mid + j][1] / 3 - u[mid + j][2] / 3;
-            u[mid - j][0] = 4 * u[mid - j][1] / 3 - u[mid - j][2] / 3;
-        }
-        /*NEW*/
-
-        if (Condition(u, u_copy, eps)) {
-            cout << "Number of iterations: " << counter << "\n";
+        double q_recounted = Q(u, r, h_z, mid, k);
+        cout << "Previous - " << q << ", current - " << q_recounted << "\n";
+        if (abs(q_recounted - q) < 1) {
             break;
         }
-        // if (counter % 1000 == 0) cout << counter << "\n";
-        counter++;
+        q = q_recounted;
+
     }
 
     auto end = chrono::high_resolution_clock::now();
@@ -187,10 +199,6 @@ void Solution() {
         fu << "\n";
     }
     fu.close();
-
-    double Q1 = Q(u, r, h_z, mid, k);
-    
-    cout << "Recounted for first disk: " << Q1 << ", was for first disk: " << 8 * u0 * R << "\n";
 }
 
 int main() {
