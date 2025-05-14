@@ -107,8 +107,8 @@ double Q(const vector<vector<double>>& u, const vector<double>& r, double hz, in
 
 void Solution() {
     
-    int n = 201, m = 401;
-    double R = 25, u0 = 5, a = 0, b = 100, c = -100, d = -c,
+    int n = 251, m = 501;
+    double R = 15, u0 = 5, a = 0, b = 50, c = -50, d = -c,
             eps = 1e-5;
 
     vector<double> r(n), z(m);
@@ -119,7 +119,7 @@ void Solution() {
     print_scalar("output/R_o.txt", R);
     print_scalar("output/u0_o.txt", u0);
 
-    double h_r = r[1] - r[0], h_z = z[1] - z[0], _1h_r_2 = 1 / pow (h_r, 2), _1h_z_2 = 1 / pow (h_z, 2)/*rel_sq = pow(h_r / h_z, 2), mul = 1 / (2 + 2 * rel_sq)*/;
+    double h_r = r[1] - r[0], h_z = z[1] - z[0], _1h_r_2 = 1 / pow (h_r, 2), _1h_z_2 = 1 / pow (h_z, 2);
 
     vector<vector<double>> u(m, vector<double>(n, 0));
 
@@ -132,6 +132,8 @@ void Solution() {
     }
 
     double q = 8 * u0 * R;
+    int counter_outer = 1;
+    const int max_iter = 20;
 
     while (true) {
 
@@ -141,20 +143,6 @@ void Solution() {
 
         while (true) {
             vector<vector<double>> u_copy = u;
-
-            /*for (int j = 1; j < m - 1; ++j) {
-                if (j == mid) {
-                    for (int i = k; i < n - 1; ++i) {
-                        u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
-                    }
-                    continue;
-                }
-                for (int i = 1; i < n - 1; ++i) {
-                    u[j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[j][i + 1] + (i - 1./2)*_1h_r_2/i * u[j][i - 1] + _1h_z_2 * (u[j - 1][i] + u[j + 1][i]));
-                }
-                u[j][0] = 4 * u[j][1] / 3 - u[j][2] / 3;
-                //u[j][0] = u[j][1];
-            }*/
 
             /*NEW*/
             for (int i = k; i < n - 1; ++i) {
@@ -175,9 +163,9 @@ void Solution() {
                 cout << "Number of iterations: " << counter << "\n";
                 break;
             }
-            // if (counter % 1000 == 0) cout << counter << "\n";
             counter++;
         }
+
         double q_recounted = Q(u, r, h_z, mid, k);
         cout << "Previous - " << q << ", current - " << q_recounted << "\n";
         if (abs(q_recounted - q) < 1) {
@@ -185,6 +173,10 @@ void Solution() {
         }
         q = q_recounted;
 
+        if (counter_outer >= max_iter) {
+            cout << "Внешний итерационный процесс не сошёлся...\n";
+            break;
+        }
     }
 
     auto end = chrono::high_resolution_clock::now();

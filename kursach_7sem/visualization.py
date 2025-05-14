@@ -60,21 +60,8 @@ def surface_error(u, u_a, r, z, u0):
     plt.show()
     return u_er
 
-def srez_v_z0(r, z, u, u_a, u0):
-    m = len(z)
-    plt.plot(r, (u[int((m - 1) / 2), :] - u_a[int((m - 1) / 2), :]) / u0)
-    plt.show()
-
-def srez_v_z_min(r, u, u_a, u0):
-    plt.plot(r, np.abs(u[0, :] - u_a[0, :]))
-    plt.show()
-
-def srez_v_r0(z, u, u_a, u0):
-    plt.plot(z, (u[:, 0] - u_a[:, 0]) / u0)
-    plt.show()
-
-def srez_v_r_max(z, u, u_a, u0):
-    plt.plot(z, np.abs(u[:, -1] - u_a[:, -1]))
+def srez_v_r0(z, u, u0):
+    plt.plot(z, u[:, 0])
     plt.show()
 
 def sigma(r, z, u, u_a, R):
@@ -87,8 +74,14 @@ def sigma(r, z, u, u_a, R):
     
     s_r = -(u[mid + 1, :k - 1] - u[mid, :k - 1]) / h_z
     s_a = -(u_a[mid + 1, :k - 1] - u_a[mid, :k - 1]) / h_z
+
+    
     plt.plot(r[:k - 1], s_a, label='analitic')
     plt.plot(r[:k - 1], s_r, label='numerical')
+    plt.legend()
+    plt.show()
+
+    plt.plot(r[:k - 1], (s_r - s_a) / np.max(np.abs(s_a)), label='relative error')
     plt.legend()
     plt.show()
 
@@ -104,19 +97,14 @@ def main():
     with open('output/u0_o.txt', 'r') as f:
         u_0 = float(f.read())
     
-    #surface_numerical(r, z, u)
+    surface_numerical(r, z, u)
     u_a = surface_analitic(r, z, R, u_0)
     u_er = surface_error(u, u_a, r, z, u_0)
     print(f"Макс значение относ погрешности (R={R:.0f}) - {np.max(np.abs(u_er)):.4f}")
-       
-    
     
     # различие погрешностей между разными порядками аппроксимации
     # surface_error(u1, u, r, z)
-    #srez_v_z0(r, z, u, u_a, u_0)
-    #srez_v_z_min(r, u, u_a, u_0)
-    #srez_v_r0(z, u, u_a, u_0)
-    #srez_v_r_max(z, u, u_a, u_0)
+    srez_v_r0(z, u, u_0)
     sigma(r, z, u, u_a, R)
 
 

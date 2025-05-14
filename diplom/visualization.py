@@ -14,6 +14,10 @@ def surface_numerical(r, z, u):
 
     plt.show()
 
+def srez_v_r0(z, u):
+    plt.plot(z, u[:, 0])
+    plt.show()
+
 def main():
     with open('output/u.txt', 'r') as f:
         u = np.array([list(map(float, s.split())) for s in f])
@@ -21,8 +25,13 @@ def main():
         r = np.array(list(map(float, f.read().split())))
     with open('output/z.txt', 'r') as f:
         z = np.array(list(map(float, f.read().split())))
+    with open('output/u1.txt', 'r') as f:
+        u1 = np.array([list(map(float, s.split())) for s in f])
 
     surface_numerical(r, z, u)
+    #surface_numerical(r, z, u1)
+    srez_v_r0(z, u)
+    #srez_v_r0(z, u1)
 
 if __name__ == "__main__":
     main()
