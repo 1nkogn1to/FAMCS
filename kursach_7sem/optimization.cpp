@@ -193,6 +193,80 @@ void Solution() {
     fu.close();
 }
 
+void Solution2() {
+    int n = 251, m = 501;
+    double R = 15, u0 = 5, a = 0, b = 50, c = -50, d = -c,
+            eps = 1e-5;
+
+    vector<double> r(n), z(m);
+    Linspace(a, b, r);
+    Linspace(c, d, z);
+    print_vector("output/r_o.txt", r);
+    print_vector("output/z_o.txt", z);
+    print_scalar("output/R_o.txt", R);
+    print_scalar("output/u0_o.txt", u0);
+
+    double h_r = r[1] - r[0], h_z = z[1] - z[0], _1h_r_2 = 1 / pow (h_r, 2), _1h_z_2 = 1 / pow (h_z, 2);
+
+    vector<vector<double>> u(m, vector<double>(n, 0));
+
+    auto start = chrono::high_resolution_clock::now();
+
+    int k = 0, mid = (m - 1) / 2;
+    while (r[k] <= R) {
+        u[mid][k] = u0;
+        ++k;
+    }
+
+    double q = 8 * u0 * R, F = q / (6 * pi); // F это постоянная часть функции в условии на производную на внешней границе
+    int counter = 1;
+
+
+    while (true) {
+        vector<vector<double>> u_copy = u;
+
+        for (int i = k; i < n - 1; ++i) {
+            u[mid][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid][i - 1] + _1h_z_2 * (u[mid - 1][i] + u[mid + 1][i]));
+        }
+
+        for (int j = 1; j < mid; ++j) {
+            for (int i = 1; i < n - 1; ++i) {
+                u[mid + j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid + j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid + j][i - 1] + _1h_z_2 * (u[mid + j - 1][i] + u[mid + j + 1][i]));
+                u[mid - j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid - j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid - j][i - 1] + _1h_z_2 * (u[mid - j - 1][i] + u[mid - j + 1][i]));
+            }
+            u[mid + j][0] = 4 * u[mid + j][1] / 3 - u[mid + j][2] / 3;
+            u[mid - j][0] = 4 * u[mid - j][1] / 3 - u[mid - j][2] / 3;
+            u[mid + j][n - 1] = F * b * h_r / pow(sqrt(b * b + z[mid + j] * z[mid + j]), 3) + 4./3 * u[mid + j][n - 2] - 1./3 * u[mid + j][n - 3];
+            u[mid - j][n - 1] = u[mid + j][n - 1];
+        }
+
+        for (int i = 1; i < n; ++i) {
+            u[0][i] = F * d * h_z / pow(sqrt(r[i] * r[i] + d * d), 3) + 4./3 * u[1][i] - 1./3 * u[2][i];
+            u[m - 1][i] = u[0][i];
+        }
+
+        if (Condition(u, u_copy, eps)) {
+            cout << "Number of iterations: " << counter << "\n";
+            break;
+        }
+        counter++;
+    }
+
+
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    cout << "Время выполнения (сек): " << duration.count() << "\n";
+
+    ofstream fu("output/u_o.txt");
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < n; ++j) {
+            fu << u[i][j] << " ";
+        }
+        fu << "\n";
+    }
+    fu.close();    
+}
+
 int main() {
     Solution();
 
