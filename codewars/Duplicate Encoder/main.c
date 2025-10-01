@@ -29,7 +29,7 @@ char *DuplicateEncoder(const char *string)
 }
 
 int main() {
-    const char* solution = DuplicateEncoder("  hui   ");
+    const char* solution = DuplicateEncoder("  huH   ");
     printf("%s", solution);
     return 0;
 }                                                                                            
