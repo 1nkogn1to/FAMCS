@@ -105,11 +105,14 @@ double Q(const vector<vector<double>>& u, const vector<double>& r, double hz, in
     return integ1 + integ2;
 }
 
-void Solution() {
+void Solution2(const char* filename, vector<vector<double>>& u, int k);
+//void Solution3(const char* filename, vector<vector<double>>& u, int k);
+
+void Solution1(const char* filename) {
     
-    int n = 251, m = 501;
-    double R = 15, u0 = 5, a = 0, b = 50, c = -50, d = -c,
-            eps = 1e-5;
+    int n = 201, m = 401;
+    double R = 3, u0 = 5, a = 0, b = 10, c = -10, d = -c,
+            eps = 1e-7;
 
     vector<double> r(n), z(m);
     Linspace(a, b, r);
@@ -123,18 +126,20 @@ void Solution() {
 
     vector<vector<double>> u(m, vector<double>(n, 0));
 
-    auto start = chrono::high_resolution_clock::now();
-
     int k = 0, mid = (m - 1) / 2;
     while (r[k] <= R) {
         u[mid][k] = u0;
         ++k;
     }
 
+    vector<vector<double>> u_start = u;
+    
     double q = 8 * u0 * R;
     int counter_outer = 1;
     const int max_iter = 20;
-
+    
+    auto start = chrono::high_resolution_clock::now();
+    
     while (true) {
 
         approx2(u, z, r, R, u0, q);
@@ -183,7 +188,92 @@ void Solution() {
     chrono::duration<double> duration = end - start;
     cout << "Время выполнения (сек): " << duration.count() << "\n";
 
-    ofstream fu("output/u_o.txt");
+    ofstream fu(filename);
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < n; ++j) {
+            fu << u[i][j] << " ";
+        }
+        fu << "\n";
+    }
+    fu.close();
+
+    //Solution3("output/u2.txt", u, k);
+}
+
+void Solution2(const char* filename, vector<vector<double>>& u, int k) {
+    int n = 101, m = 201;
+    double R = 15, u0 = 5, a = 0, b = 50, c = -50, d = -c,
+            eps = 1e-5;
+
+    vector<double> r(n), z(m);
+    Linspace(a, b, r);
+    Linspace(c, d, z);
+    print_vector("output/r_o.txt", r);
+    print_vector("output/z_o.txt", z);
+    print_scalar("output/R_o.txt", R);
+    print_scalar("output/u0_o.txt", u0);
+
+    double h_r = r[1] - r[0], h_z = z[1] - z[0], _1h_r_2 = 1 / pow (h_r, 2), _1h_z_2 = 1 / pow (h_z, 2);
+
+    //vector<vector<double>> u(m, vector<double>(n, 0));
+
+    auto start = chrono::high_resolution_clock::now();
+
+    /*int k = 0, mid = (m - 1) / 2;
+    while (r[k] <= R) {
+        u[mid][k] = u0;
+        ++k;
+    }*/
+
+    int mid = (m - 1) / 2;
+
+    double q = 8 * u0 * R, F = -q / (6 * pi); // F это постоянная часть функции в условии на производную на внешней границе
+    int counter = 1;
+
+    while (true) {
+        vector<vector<double>> u_copy = u;
+
+        for (int i = k; i < n - 1; ++i) {
+            u[mid][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid][i - 1] + _1h_z_2 * (u[mid - 1][i] + u[mid + 1][i]));
+        }
+        u[mid][n - 1] = F * b * h_r / pow(b - R, 3) + 4./3 * u[mid][n - 2] - 1./3 * u[mid][n - 3];
+
+        for (int j = 1; j < mid; ++j) {
+            for (int i = 1; i < n - 1; ++i) {
+                u[mid + j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid + j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid + j][i - 1] + _1h_z_2 * (u[mid + j - 1][i] + u[mid + j + 1][i]));
+                u[mid - j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid - j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid - j][i - 1] + _1h_z_2 * (u[mid - j - 1][i] + u[mid - j + 1][i]));
+            }
+            u[mid + j][0] = 4 * u[mid + j][1] / 3 - u[mid + j][2] / 3;
+            u[mid - j][0] = u[mid + j][0];
+            u[mid + j][n - 1] = F * (b - R) * h_r / pow(sqrt((b - R) * (b - R) + z[mid + j] * z[mid + j]), 3) + 4./3 * u[mid + j][n - 2] - 1./3 * u[mid + j][n - 3];
+            u[mid - j][n - 1] = u[mid + j][n - 1];
+        }
+
+        for (int i = 1; i < n; ++i) {
+            if (i < k)
+                u[m - 1][i] = F * h_z / pow(d, 2) + 4./3 * u[m - 2][i] - 1./3 * u[m - 3][i];
+            else 
+                u[m - 1][i] = F * d * h_z / pow(sqrt((r[i] - R) * (r[i] - R) + d * d), 3) + 4./3 * u[m - 2][i] - 1./3 * u[m - 3][i];
+            
+            u[0][i] = u[m - 1][i];
+        }
+
+        u[0][0] = 4 * u[0][1] / 3 - u[0][2] / 3;
+        u[m - 1][0] = u[0][0];
+
+        if (Condition(u, u_copy, eps)) {
+            cout << "Number of iterations: " << counter << "\n";
+            break;
+        }
+        counter++;
+    }
+
+
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    cout << "Время выполнения (сек): " << duration.count() << "\n";
+
+    ofstream fu(filename);
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
             fu << u[i][j] << " ";
@@ -193,10 +283,10 @@ void Solution() {
     fu.close();
 }
 
-void Solution2() {
-    int n = 251, m = 501;
+void Solution3(const char* filename/*, vector<vector<double>>& u, int k*/) {
+    int n = 101, m = 201;
     double R = 15, u0 = 5, a = 0, b = 50, c = -50, d = -c,
-            eps = 1e-5;
+            eps = 1e-7;
 
     vector<double> r(n), z(m);
     Linspace(a, b, r);
@@ -217,8 +307,9 @@ void Solution2() {
         u[mid][k] = u0;
         ++k;
     }
+    //int mid = (m - 1) / 2;
 
-    double q = 8 * u0 * R, F = q / (6 * pi); // F это постоянная часть функции в условии на производную на внешней границе
+    double q = 8 * u0 * R;
     int counter = 1;
 
 
@@ -228,6 +319,7 @@ void Solution2() {
         for (int i = k; i < n - 1; ++i) {
             u[mid][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid][i - 1] + _1h_z_2 * (u[mid - 1][i] + u[mid + 1][i]));
         }
+        u[mid][n - 1] = 1./(3 + 2*h_r*(b - R)/((b - R)*(b - R) + z[mid]*z[mid])) * (4 * u[mid][n - 2] - u[mid][n - 3]);
 
         for (int j = 1; j < mid; ++j) {
             for (int i = 1; i < n - 1; ++i) {
@@ -235,15 +327,20 @@ void Solution2() {
                 u[mid - j][i] = 1 / (2 * _1h_r_2 + 2 * _1h_z_2) * ((i + 1./2)*_1h_r_2/i * u[mid - j][i + 1] + (i - 1./2)*_1h_r_2/i * u[mid - j][i - 1] + _1h_z_2 * (u[mid - j - 1][i] + u[mid - j + 1][i]));
             }
             u[mid + j][0] = 4 * u[mid + j][1] / 3 - u[mid + j][2] / 3;
-            u[mid - j][0] = 4 * u[mid - j][1] / 3 - u[mid - j][2] / 3;
-            u[mid + j][n - 1] = F * b * h_r / pow(sqrt(b * b + z[mid + j] * z[mid + j]), 3) + 4./3 * u[mid + j][n - 2] - 1./3 * u[mid + j][n - 3];
+            u[mid - j][0] = u[mid + j][0];
+            u[mid + j][n - 1] = 1./(3 + 2*h_r*(b - R)/((b - R)*(b - R) + z[mid + j]*z[mid + j])) * (4 * u[mid + j][n - 2] - u[mid + j][n - 3]);
             u[mid - j][n - 1] = u[mid + j][n - 1];
         }
 
         for (int i = 1; i < n; ++i) {
-            u[0][i] = F * d * h_z / pow(sqrt(r[i] * r[i] + d * d), 3) + 4./3 * u[1][i] - 1./3 * u[2][i];
-            u[m - 1][i] = u[0][i];
+            if (i < k)
+                u[m - 1][i] = 1./(3 + 2*h_z/d) * (4 * u[m - 2][i] - u[m - 3][i]);
+            else
+                u[m - 1][i] = 1./(3 + 2*h_z*d/((r[i] - R)*(r[i] - R) + d*d)) * (4 * u[m - 2][i] - u[m - 3][i]);
+            u[0][i] = u[m - 1][i];
         }
+        u[0][0] = 4 * u[0][1] / 3 - u[0][2] / 3;
+        u[m - 1][0] = u[0][0];
 
         if (Condition(u, u_copy, eps)) {
             cout << "Number of iterations: " << counter << "\n";
@@ -252,23 +349,24 @@ void Solution2() {
         counter++;
     }
 
-
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> duration = end - start;
     cout << "Время выполнения (сек): " << duration.count() << "\n";
 
-    ofstream fu("output/u_o.txt");
+    ofstream fu(filename);
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
             fu << u[i][j] << " ";
         }
         fu << "\n";
     }
-    fu.close();    
+    fu.close();
 }
 
 int main() {
-    Solution();
+    Solution1("output/u1.txt"); // короче граничное условие первого рода самое сильное и с ним всё работает быстрее, потому как значение там сразу фиксируется и к нему всё подгоняется, а в при других условиях на каждой итерации значение меняется
+    // к тому же исходя из результатов запуска итерационного процесса со вторыми и третьими граничными условиями после процесса с условием первого рода, а именно из количества итераций (одна итерация) проведённых после первого процесса можно сказать, что если искомая функция удовлетворяет первому граничному условию, то она автоматически удовлетворяет второму и третьему.
+    //Solution3("output/u2.txt"); 
 
     return 0;
 }

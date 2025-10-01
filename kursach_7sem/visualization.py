@@ -61,7 +61,7 @@ def surface_error(u, u_a, r, z, u0):
     return u_er
 
 def srez_v_r0(z, u, u0):
-    plt.plot(z, u[:, 0])
+    plt.plot(z, u[:, 0] / u0)
     plt.show()
 
 def sigma(r, z, u, u_a, R):
@@ -86,8 +86,10 @@ def sigma(r, z, u, u_a, R):
     plt.show()
 
 def main():
-    with open('output/u_o.txt', 'r') as f:
-        u = np.array([list(map(float, s.split())) for s in f])
+    with open('output/u1.txt', 'r') as f:
+        u1 = np.array([list(map(float, s.split())) for s in f])
+    with open('output/u2.txt', 'r') as f:
+        u2 = np.array([list(map(float, s.split())) for s in f])
     with open('output/r_o.txt', 'r') as f:
         r = np.array(list(map(float, f.read().split())))
     with open('output/z_o.txt', 'r') as f:
@@ -97,15 +99,18 @@ def main():
     with open('output/u0_o.txt', 'r') as f:
         u_0 = float(f.read())
     
-    surface_numerical(r, z, u)
+    surface_numerical(r, z, u1)
+    #surface_numerical(r, z, u2)
     u_a = surface_analitic(r, z, R, u_0)
-    u_er = surface_error(u, u_a, r, z, u_0)
-    print(f"Макс значение относ погрешности (R={R:.0f}) - {np.max(np.abs(u_er)):.4f}")
-    
+    u_er1 = surface_error(u1, u_a, r, z, u_0)
+    #u_er2 = surface_error(u2, u_a, r, z, u_0)
+    print(f"Макс значение относ погрешности первого решения (R={R:.0f}) - {np.max(np.abs(u_er1)):.4f}")
+    #print(f"Макс значение относ погрешности второго рещения (R={R:.0f}) - {np.max(np.abs(u_er2)):.4f}")
+
     # различие погрешностей между разными порядками аппроксимации
     # surface_error(u1, u, r, z)
-    srez_v_r0(z, u, u_0)
-    sigma(r, z, u, u_a, R)
+    # srez_v_r0(z, u, u_0)
+    # sigma(r, z, u, u_a, R)
 
 
 if __name__ == "__main__":
